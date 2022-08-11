@@ -1,0 +1,2 @@
+### get member
+GET http://localhost:8080/member/1
