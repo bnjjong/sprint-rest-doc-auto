@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
@@ -60,7 +61,7 @@ test {
 
     dependsOn jsonDoclet
     useJUnitPlatform()
-    finalizedBy 'asciidoctor'
+//    finalizedBy 'asciidoctor'
 }
 
 // src/docs/asciidoc/*.adoc 파일을 build/docs/asciidoc에 *.html 파일로 변환
@@ -71,29 +72,16 @@ asciidoctor {
     baseDirFollowsSourceFile()
 }
 
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
+asciidoctor.doLast {
+    copy {
+        from file("build/docs/asciidoc")
+        into file("src/main/resources/static/docs")
+        include "index.html"
+    }
 }
 
 bootJar {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}") {
-        into 'BOOT-INF/classes/static/docs'
-    }
-}
-
-// asccidoctor 작업 이후 "build/docs/asciidoc" 에 생성된 HTML 파일을 static/docs 로 copy -> 어플리케이션 실행 후 localhost:8080/docs/~~.html 경로로 접근 가능
-// 어플리케이션 실행 전에 이 Task 만 따로 수행 필요.
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-// assemble을 copyDocument에 의존하게 하여, assemble보다 copyDocument가 먼저 실행되도록 함
-// jar 파일은 copyDocument가 끝나야 생성이 됨
-assemble {
-    dependsOn copyDocument
 }
 
 jar {

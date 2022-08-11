@@ -1,8 +1,10 @@
 package io.jjong.sprintrestdocauto.api;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -23,18 +25,21 @@ public class MemberResponse {
   /**
    * email.
    */
+  @NotBlank
   private String email;
   /**
    * member name.
    */
+  @NotBlank
   private String name;
   /**
    * phone number.
    */
+  @NotBlank
   private String phoneNumber;
 
 
-  public MemberResponse(String email, String name, String phoneNumber) {
+  public MemberResponse(@NonNull String email, @NonNull String name, @NonNull String phoneNumber) {
     this.email = email;
     this.name = name;
     this.phoneNumber = phoneNumber;

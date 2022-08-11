@@ -7,6 +7,7 @@ import static capital.scalable.restdocs.AutoDocumentation.links;
 import static capital.scalable.restdocs.AutoDocumentation.methodAndPath;
 import static capital.scalable.restdocs.AutoDocumentation.modelAttribute;
 import static capital.scalable.restdocs.AutoDocumentation.pathParameters;
+import static capital.scalable.restdocs.AutoDocumentation.sectionBuilder;
 import static capital.scalable.restdocs.AutoDocumentation.requestFields;
 import static capital.scalable.restdocs.AutoDocumentation.requestParameters;
 import static capital.scalable.restdocs.AutoDocumentation.responseFields;
@@ -23,9 +24,12 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 
+import capital.scalable.restdocs.SnippetRegistry;
 import capital.scalable.restdocs.jackson.JacksonResultHandlers;
 import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
+import capital.scalable.restdocs.section.SectionBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -80,6 +84,7 @@ class MemberApiTest {
             ResponseModifyingPreprocessors.replaceBinaryContent(),
             ResponseModifyingPreprocessors.limitJsonArrayLength(objectMapper),
             prettyPrint())
+        , sectionBuilder().snippetNames(SectionBuilder.DEFAULT_SNIPPETS.stream().toList()).skipEmpty(true).build()
     );
     this.mvc = initMockMvc(context, provider, restDocs);
   }
