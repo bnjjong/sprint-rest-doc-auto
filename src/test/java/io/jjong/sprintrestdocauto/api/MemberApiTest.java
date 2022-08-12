@@ -21,12 +21,10 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-
-import capital.scalable.restdocs.SnippetRegistry;
 import capital.scalable.restdocs.jackson.JacksonResultHandlers;
 import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
 import capital.scalable.restdocs.section.SectionBuilder;
@@ -84,12 +82,16 @@ class MemberApiTest {
             ResponseModifyingPreprocessors.replaceBinaryContent(),
             ResponseModifyingPreprocessors.limitJsonArrayLength(objectMapper),
             prettyPrint())
-        , sectionBuilder().snippetNames(SectionBuilder.DEFAULT_SNIPPETS.stream().toList()).skipEmpty(true).build()
+        // empty snippet 은 제외 함.
+        , sectionBuilder().snippetNames(SectionBuilder.DEFAULT_SNIPPETS.stream().toList())
+            .skipEmpty(true)
+            .build()
     );
     this.mvc = initMockMvc(context, provider, restDocs);
   }
 
-  private MockMvc initMockMvc(WebApplicationContext context, RestDocumentationContextProvider provider,
+  private MockMvc initMockMvc(WebApplicationContext context,
+      RestDocumentationContextProvider provider,
       RestDocumentationResultHandler restDocs) {
     return MockMvcBuilders
         .webAppContextSetup(context)
@@ -135,13 +137,37 @@ class MemberApiTest {
       final Long memberId = 1L;
 
       mvc.perform(
-          get(baseUrl+"/"+memberId)
-              .contentType(MediaType.APPLICATION_JSON))
+              get(baseUrl + "/" + memberId)
+                  .contentType(MediaType.APPLICATION_JSON))
           .andExpectAll(
               status().isOk(),
               content().contentType(MediaType.APPLICATION_JSON),
               jsonPath("$.email").value("jongsang@google.com")
           );
+    }
+  }
+
+  @Nested
+  class Create {
+
+    @Test
+    void success() throws Exception {
+
+      MemberCreationRequest request = new MemberCreationRequest(
+          "jongsang@bigin.io",
+          "홍길동",
+          "010-1234-1234"
+      );
+
+      mvc.perform(
+          post(baseUrl)
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request))
+      ).andExpectAll(
+          status().isCreated(),
+          content().contentType(MediaType.APPLICATION_JSON),
+          jsonPath("$.email").value("jongsang@bigin.io"));
+
     }
   }
 

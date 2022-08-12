@@ -11,6 +11,8 @@ endif::[]
 :sectlinks:
 :docinfo: shared-head
 
+== 멤버 생성
+include::{snippets}/create/success/auto-section.adoc[]
 
 == 멤버 조회
 include::{snippets}/find-by-id/success/auto-section.adoc[]

@@ -1,2 +1,14 @@
+### create member
+POST http://localhost:8080/member
+Content-Type: application/json
+
 ### get member
 GET http://localhost:8080/member/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "jongsang@bigin.io",
+  "name":  "홍길동",
+  "phone_number": "010-1234-1234"
+}
